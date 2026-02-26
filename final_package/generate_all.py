@@ -65,8 +65,49 @@ def gen_free(note: dict, series: dict) -> str:
 
     # 本編
     lines.append("## 本編\n")
+    # must_include を本文に強制反映（freeの仕様担保）
+    lines.append("### 0. このノートで必ず押さえるポイント\n")
+    for m in must:
+        lines.append(f"- {m}")
+    lines.append("")
 
-    lines.append(f"### 1. {title}とは何か？\n")
+
+    # must_include に「全体構成図」がある場合は、freeでも概念図を本文に出す（ポート番号などは書かない）
+    if any("全体構成図" in m for m in must):
+        lines.append("### 0.5 全体構成図（概念図）\n")
+        lines.append("ここでは“配線図”ではなく、“登場人物と流れ”が分かるレベルの概念図だけ載せます。\n")
+        lines.append("```")
+        lines.append("端末（PC/スマホ）")
+        lines.append("   │  同期/閲覧/アップロード")
+        lines.append("   ▼")
+        lines.append("Nextcloud（アプリ本体）")
+        lines.append("   │  ユーザー管理/共有/履歴")
+        lines.append("   ▼")
+        lines.append("データ保存（ストレージ）")
+        lines.append("   │  バックアップ/復元")
+        lines.append("   ▼")
+        lines.append("管理（あなたがコントロール）")
+        lines.append("```\n")
+
+    # must_include に Dropbox が含まれる場合、freeでも比較の観点だけ整理する（具体手順・コマンドは書かない）
+    if any("Dropbox" in m for m in must):
+        lines.append("### 0.6 Dropbox と Nextcloud の違い（ざっくり）\n")
+        lines.append("結論は「**誰がデータの主導権を持つか**」です。\n")
+        lines.append("| 観点 | Dropbox | Nextcloud |")
+        lines.append("|---|---|---|")
+        lines.append("| 主導権 | 提供サービス側の仕様に乗る | 自分（自宅/クラウドの自分環境）でコントロール |")
+        lines.append("| プライバシー | 便利だが“外部サービスに預ける” | “自分の箱”に入れて管理しやすい |")
+        lines.append("| 共有 | 手軽 | 自分ルールで共有を設計できる |")
+        lines.append("| 運用 | サービス任せ | バックアップ/更新などは自分が握る |")
+        lines.append("| 向いている人 | とにかく手軽に使いたい | 管理/学習/自分の環境を作りたい |\n")
+
+    # 見出しの二重「とは何か」を防止
+    heading_title = title
+    if heading_title.endswith("とは何か"):
+        lines.append(f"### 1. {heading_title}？\n")
+    else:
+        lines.append(f"### 1. {heading_title}とは何か？\n")
+
     lines.append(f"このノートのテーマを一言で表すなら、「{metaphor_name}」のようなイメージです。")
     lines.append(f"{metaphor_desc}ことが、このテーマの本質的な役割です。")
     lines.append("難しそうに聞こえるかもしれませんが、仕組みの目的はシンプルです。")
@@ -388,11 +429,11 @@ def gen_paid(note: dict, series: dict) -> str:
 # メイン処理
 # ────────────────────────────────────────────
 def main():
-    with open("/home/claude/bulk_notes/master_plan.json", encoding="utf-8") as f:
+    with open("master_plan.json", encoding="utf-8") as f:
         plan = json.load(f)
 
-    out_md  = "/home/claude/bulk_notes/md"
-    out_txt = "/home/claude/bulk_notes/txt"
+    out_md  = "out/md"
+    out_txt = "out/txt"
     os.makedirs(out_md,  exist_ok=True)
     os.makedirs(out_txt, exist_ok=True)
 
