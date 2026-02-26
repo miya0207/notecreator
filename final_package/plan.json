@@ -1,0 +1,74 @@
+{
+  "brand": "ServerStart",
+  "notes": [
+    {
+      "id": "F01",
+      "type": "free",
+      "title": "サーバーとVMの基礎概念",
+      "goal": ["サーバーの意味を説明できる", "VMが怖くなくなる", "なぜVMが安全か理解する"],
+      "must_include": ["サーバー=役割の例え", "VM=PCの中の別PC", "失敗しても戻せる安心感"],
+      "must_avoid": ["具体コマンド", "具体設定値"],
+      "cta_next": "F02"
+    },
+    {
+      "id": "F02",
+      "type": "free",
+      "title": "Ubuntu Server入門",
+      "goal": ["Ubuntu Serverの位置づけを理解", "GUIが無い理由が分かる"],
+      "must_include": ["Ubuntu Serverとは", "ターミナルの怖さを減らす", "よくある誤解"],
+      "must_avoid": ["aptコマンド羅列", "インストール手順の詳細"],
+      "cta_next": "F03"
+    },
+    {
+      "id": "F03",
+      "type": "free",
+      "title": "Dockerとコンテナの基礎",
+      "goal": ["Dockerの役割が分かる", "コンテナ=完成品の箱という比喩が腹落ち"],
+      "must_include": ["Dockerのメリット", "なぜ差分が減るか", "初心者が詰まるポイント分類"],
+      "must_avoid": ["docker composeコマンドの手順詳細"],
+      "cta_next": "F04"
+    },
+    {
+      "id": "F04",
+      "type": "free",
+      "title": "全体構成とよくある誤解",
+      "goal": ["PC→VM→Ubuntu→Docker→アプリを説明できる", "次にやることが明確"],
+      "must_include": ["構成図", "学習ロードマップ", "詰んだら救済がある導線（説明のみ）"],
+      "must_avoid": ["救済の具体価格や提供手順の詳細"],
+      "cta_next": "P01"
+    },
+    {
+      "id": "P01",
+      "type": "paid",
+      "title": "VM構築手順（初心者向け）",
+      "goal": ["VMを作成しUbuntuを起動できる"],
+      "must_include": ["推奨スペック例（複数案）", "チェックポイント", "地雷マップ", "復旧ルート"],
+      "must_avoid": [],
+      "cta_next": "P02"
+    },
+    {
+      "id": "P02",
+      "type": "paid",
+      "title": "Ubuntu初期設定とDocker導入",
+      "goal": ["Dockerが動き、compose実行前まで到達"],
+      "must_include": ["最低限のコマンド", "確認コマンド", "よくあるエラー対処"],
+      "must_avoid": [],
+      "cta_next": "P03"
+    },
+    {
+      "id": "P03",
+      "type": "paid",
+      "title": "Immich構築とチェックポイント",
+      "goal": ["Immichの画面表示まで到達", "バックアップの考え方を理解（実装は最低限）"],
+      "must_include": ["docker compose例", "起動確認", "トラブル時の切り分け", "次の拡張（外部公開は別）"],
+      "must_avoid": [],
+      "cta_next": null
+    }
+  ],
+  "launch_plan": {
+    "month0": "無料4本公開",
+    "month2": "有料3本+テンプレ提供開始",
+    "month3": "質問サポート開始（3回/14日）",
+    "month4": "救済措置（完成VMデモ/再構築）"
+  }
+}

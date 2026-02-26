@@ -1,0 +1,104 @@
+{
+  "brand": "ServerStart",
+  "series": [
+    {
+      "id": "SS2",
+      "theme": "ServerStart継続",
+      "title": "NextcloudでつくるプライベートCloud",
+      "notes": [
+        {"id":"SS2-F01","type":"free","title":"Nextcloudとは何か","goal":["Nextcloudの役割を説明できる","DropboxとNextcloudの違いを理解する"],"must_include":["クラウドストレージの仕組み","プライバシーのメリット","全体構成図"],"must_avoid":["コマンド","設定値"],"cta_next":"SS2-F02"},
+        {"id":"SS2-F02","type":"free","title":"Nextcloud導入の全体像","goal":["導入ステップを把握できる","詰まりポイントを事前理解できる"],"must_include":["ロードマップ","よくある誤解","安心感の醸成"],"must_avoid":["コマンド","ポート番号"],"cta_next":"SS2-P01"},
+        {"id":"SS2-P01","type":"paid","title":"NextcloudをDockerで構築する","goal":["docker-composeでNextcloudを起動できる","ブラウザからアクセスできる"],"must_include":["docker-compose例","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":["外部公開手順"],"cta_next":"SS2-P02"},
+        {"id":"SS2-P02","type":"paid","title":"Nextcloud運用と同期設定","goal":["PCとスマホから同期できる","バックアップができる"],"must_include":["クライアント設定","バックアップコマンド","地雷マップ","復旧ルート"],"must_avoid":["SSL詳細"],"cta_next":null}
+      ]
+    },
+    {
+      "id": "SS3",
+      "theme": "ServerStart継続",
+      "title": "GrafanaとPrometheusで自宅サーバーを監視する",
+      "notes": [
+        {"id":"SS3-F01","type":"free","title":"サーバー監視とは何か","goal":["監視の必要性を理解できる","GrafanaとPrometheusの役割を把握できる"],"must_include":["監視=健康診断の例え","ダッシュボードの概念","構成図"],"must_avoid":["コマンド","設定値"],"cta_next":"SS3-F02"},
+        {"id":"SS3-F02","type":"free","title":"監視ツールの全体像と選び方","goal":["GrafanaとPrometheusの関係を説明できる","なぜセットで使うかを理解できる"],"must_include":["データの流れ図","初心者が混乱しやすいポイント","有料ノートの予告"],"must_avoid":["YAML詳細","ポート番号"],"cta_next":"SS3-P01"},
+        {"id":"SS3-P01","type":"paid","title":"Grafana+PrometheusをDockerで構築","goal":["docker-composeで両ツールを起動できる","ブラウザでダッシュボードを表示できる"],"must_include":["docker-compose例","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":"SS3-P02"},
+        {"id":"SS3-P02","type":"paid","title":"ダッシュボード作成と通知設定","goal":["CPU・メモリのグラフを作れる","アラート通知を設定できる"],"must_include":["パネル作成手順","Slack通知設定","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "LX1",
+      "theme": "Linuxスキル系",
+      "title": "Linux基本コマンド入門",
+      "notes": [
+        {"id":"LX1-F01","type":"free","title":"Linuxコマンドが怖くない理由","goal":["コマンドラインへの苦手意識を減らせる","基本的な考え方を理解できる"],"must_include":["コマンド=話しかけ方の例え","GUIとCLIの違い","怖くない理由3つ"],"must_avoid":["コマンド羅列","設定値"],"cta_next":"LX1-P01"},
+        {"id":"LX1-P01","type":"paid","title":"ファイル操作の基本コマンド集","goal":["ls cd mkdir rm cp mv を使いこなせる","パスの概念を理解できる"],"must_include":["各コマンドの説明と実例","絶対パスと相対パス","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":"LX1-P02"},
+        {"id":"LX1-P02","type":"paid","title":"権限・ユーザー・プロセス管理","goal":["chmod chown を理解して使える","プロセスの確認と停止ができる"],"must_include":["権限の3桁表記の説明","ps kill コマンド","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "LX2",
+      "theme": "Linuxスキル系",
+      "title": "シェルスクリプトで自動化入門",
+      "notes": [
+        {"id":"LX2-F01","type":"free","title":"シェルスクリプトで何ができる？","goal":["自動化の概念を理解できる","どんな作業が自動化できるか把握できる"],"must_include":["自動化=ロボット秘書の例え","ユースケース紹介","学習ロードマップ"],"must_avoid":["スクリプト本文","コマンド列挙"],"cta_next":"LX2-P01"},
+        {"id":"LX2-P01","type":"paid","title":"はじめてのシェルスクリプト作成","goal":["変数・if・forの基本を使えるスクリプトを書ける","crontabで定期実行できる"],"must_include":["Hello World から始める","バックアップスクリプト例","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "LX3",
+      "theme": "Linuxスキル系",
+      "title": "サーバー障害対応の基本",
+      "notes": [
+        {"id":"LX3-F01","type":"free","title":"障害対応の考え方入門","goal":["障害対応の基本フローを理解できる","パニックにならない心構えを持てる"],"must_include":["障害対応=消防士の例え","切り分けの概念","ログを見る重要性"],"must_avoid":["コマンド","設定値"],"cta_next":"LX3-P01"},
+        {"id":"LX3-P01","type":"paid","title":"ログ解析と障害切り分け手順","goal":["journalctl systemctl でログを読める","よくある障害パターンを自力で解決できる"],"must_include":["ログ確認コマンド集","障害パターン別対処表","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "HN1",
+      "theme": "ホームネットワーク系",
+      "title": "自宅ネットワーク設計入門",
+      "notes": [
+        {"id":"HN1-F01","type":"free","title":"自宅ネットワークの仕組み","goal":["IPアドレスとルーターの役割を理解できる","LANとWANの違いを説明できる"],"must_include":["ルーター=交通整理員の例え","IPアドレスの住所例え","LAN/WAN図解"],"must_avoid":["具体的なIPアドレス設定","ルーター機種別設定"],"cta_next":"HN1-F02"},
+        {"id":"HN1-F02","type":"free","title":"有線と無線の選び方","goal":["用途別の選択基準を持てる","速度と安定性のトレードオフを理解できる"],"must_include":["有線=高速道路・無線=一般道の例え","用途別推奨表","よくある誤解"],"must_avoid":["具体的なケーブル型番","ルーター設定値"],"cta_next":"HN1-P01"},
+        {"id":"HN1-P01","type":"paid","title":"自宅LANの設計と設定手順","goal":["固定IPを設定できる","VLANの基礎を理解できる"],"must_include":["固定IP設定手順","ネットワーク設計図の書き方","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "HN2",
+      "theme": "ホームネットワーク系",
+      "title": "自宅NASを構築する",
+      "notes": [
+        {"id":"HN2-F01","type":"free","title":"NASとは何か・何ができるか","goal":["NASの役割を説明できる","クラウドストレージとの違いを理解できる"],"must_include":["NAS=家族共有の本棚の例え","メリット・デメリット","用途紹介"],"must_avoid":["機種別設定","具体的な価格"],"cta_next":"HN2-P01"},
+        {"id":"HN2-P01","type":"paid","title":"SambaでLinuxNASを構築する","goal":["SambaをDockerで動かせる","WindowsとMacからアクセスできる"],"must_include":["docker-compose例","共有フォルダ設定","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":"HN2-P02"},
+        {"id":"HN2-P02","type":"paid","title":"NAS運用とRAIDの考え方","goal":["定期バックアップを設定できる","RAIDの種類とリスクを理解できる"],"must_include":["rsyncバックアップ設定","RAID0/1/5の比較表","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "HN3",
+      "theme": "ホームネットワーク系",
+      "title": "Pi-holeで広告ブロックサーバーを作る",
+      "notes": [
+        {"id":"HN3-F01","type":"free","title":"DNSと広告ブロックの仕組み","goal":["DNSの役割を理解できる","Pi-holeがなぜ広告をブロックできるか説明できる"],"must_include":["DNS=電話帳の例え","広告ブロックの仕組み図","プライバシーメリット"],"must_avoid":["コマンド","設定値"],"cta_next":"HN3-P01"},
+        {"id":"HN3-P01","type":"paid","title":"Pi-holeをDockerで構築する","goal":["Pi-holeを起動してDNSとして設定できる","ブロックリストをカスタマイズできる"],"must_include":["docker-compose例","ルーターDNS設定","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "CL1",
+      "theme": "クラウド入門系",
+      "title": "AWSをゼロから始める",
+      "notes": [
+        {"id":"CL1-F01","type":"free","title":"AWSとは何か・なぜ使うのか","goal":["AWSの主要サービスの概念を理解できる","クラウドのメリットを自前サーバーと比較できる"],"must_include":["AWS=レンタル工具箱の例え","EC2・S3・RDSの概念","料金発生の仕組み（注意点）"],"must_avoid":["マネジメントコンソールの操作手順","具体的な料金"],"cta_next":"CL1-F02"},
+        {"id":"CL1-F02","type":"free","title":"AWSの無料枠と料金の考え方","goal":["無料枠の範囲を把握できる","意図せず課金されないための知識を得られる"],"must_include":["無料枠の種類（12ヶ月・永続）","課金リスクの種類","コスト管理の基本概念"],"must_avoid":["具体的な操作手順","サービス別料金の断定値"],"cta_next":"CL1-P01"},
+        {"id":"CL1-P01","type":"paid","title":"EC2インスタンスを立ち上げる","goal":["EC2インスタンスを起動してSSH接続できる","セキュリティグループを設定できる"],"must_include":["インスタンス作成手順","キーペア設定","セキュリティグループ設定","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":"CL1-P02"},
+        {"id":"CL1-P02","type":"paid","title":"S3でファイルストレージを使う","goal":["S3バケットを作成してファイルを管理できる","CLIからアップロード・ダウンロードできる"],"must_include":["バケット作成手順","IAMユーザーとアクセスキー設定","AWS CLI操作","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    },
+    {
+      "id": "CL2",
+      "theme": "クラウド入門系",
+      "title": "DockerをAWS上で動かす",
+      "notes": [
+        {"id":"CL2-F01","type":"free","title":"クラウドでDockerを使う意味","goal":["なぜクラウドでDockerが使われるか理解できる","自宅VMとの違いを整理できる"],"must_include":["スケールの概念","デプロイの意味","自宅構成との比較図"],"must_avoid":["コマンド","料金の断定"],"cta_next":"CL2-P01"},
+        {"id":"CL2-P01","type":"paid","title":"EC2にDockerをインストールして動かす","goal":["EC2上でdocker compose upができる","コンテナをEC2で起動できる"],"must_include":["EC2へのDocker導入手順","セキュリティグループのポート設定","チェックポイント","地雷マップ","復旧ルート"],"must_avoid":[],"cta_next":null}
+      ]
+    }
+  ]
+}
