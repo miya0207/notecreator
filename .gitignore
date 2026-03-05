@@ -9,3 +9,7 @@ data/
 .vscode/
 .idea/
 final_package/out/
+out/
+__pycache__/
+*.pyc
+.venv/

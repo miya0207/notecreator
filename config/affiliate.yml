@@ -1,0 +1,47 @@
+categories:
+  - theme: レンタルサーバー
+    a8_keywords:
+      - レンタルサーバー
+      - VPS
+      - クラウドサーバー
+    services:
+      - ConoHa
+      - Xserver
+      - さくらインターネット
+  - theme: AIツール
+    a8_keywords:
+      - AI ツール
+      - ChatGPT Plus
+      - AI サービス
+    services:
+      - ChatGPT
+      - Claude
+      - Notion AI
+  - theme: IT学習
+    a8_keywords:
+      - プログラミングスクール
+      - IT資格
+      - オンライン学習
+    services:
+      - Udemy
+      - テックアカデミー
+      - Progate
+  - theme: ドメイン
+    a8_keywords:
+      - ドメイン取得
+      - ドメイン 安い
+    services:
+      - お名前.com
+      - ムームードメイン
+  - theme: PC
+    a8_keywords:
+      - ノートPC
+      - プログラミング PC
+    services:
+      - Amazon
+      - 楽天
+
+default_placeholders:
+  A8_LINK_TOP: "【広告】ここにA8アフィリエイトリンクを挿入"
+  A8_LINK_MID: "【広告】ここにA8アフィリエイトリンクを挿入"
+  A8_LINK_BOTTOM: "【広告】ここにA8アフィリエイトリンクを挿入"

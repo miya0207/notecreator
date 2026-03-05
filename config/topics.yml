@@ -1,0 +1,45 @@
+genres:
+  - name: AI副業
+    keywords:
+      - AI副業
+      - AI 稼ぎ方
+      - ChatGPT 副業
+      - AI 在宅ワーク
+      - AI 収入
+  - name: AIツール
+    keywords:
+      - AIツール おすすめ
+      - Claude 使い方
+      - ChatGPT 活用
+      - Copilot
+      - AI 便利ツール
+  - name: IT初心者
+    keywords:
+      - IT 初心者
+      - プログラミング 始め方
+      - IT転職
+      - エンジニア 未経験
+  - name: Linux
+    keywords:
+      - Linux 初心者
+      - Ubuntu 入門
+      - コマンド 基本
+      - Linux 使い方
+  - name: Docker
+    keywords:
+      - Docker 初心者
+      - Docker 入門
+      - コンテナ とは
+      - Docker 使い方
+  - name: 自宅サーバー
+    keywords:
+      - 自宅サーバー
+      - ホームサーバー
+      - Raspberry Pi
+      - 自宅サーバー 構築
+
+trend_sources:
+  - hackernews
+  - reddit_technology
+  - qiita
+  - zenn
