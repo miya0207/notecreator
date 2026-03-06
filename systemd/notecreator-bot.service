@@ -1,0 +1,23 @@
+[Unit]
+Description=Notecreator Discord Approval Bot
+Documentation=https://github.com/miyaguchi/notecreator
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/miyaguchi/notecreator
+ExecStart=/home/miyaguchi/notecreator/.venv/bin/python -m automation.approve.bot
+Restart=on-failure
+RestartSec=10
+# タイムアウト: 30秒で起動しなければ失敗扱い
+TimeoutStartSec=30
+# .env から環境変数を読み込む
+EnvironmentFile=/home/miyaguchi/notecreator/.env
+# ログをjournalに流す
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=notecreator-bot
+
+[Install]
+WantedBy=default.target

@@ -7,11 +7,14 @@ Usage:
     python run_auto.py --articles-only  # 記事生成のみ（既存トレンド使用）
     python run_auto.py --count 5        # 5記事生成
     python run_auto.py --dry-run        # API呼び出しなし（テスト用）
+    python run_auto.py --notify-discord # Threads投稿案をDiscordに通知
 """
 
 import argparse
 import json
+import os
 import sys
+import warnings
 from datetime import datetime
 from pathlib import Path
 
@@ -137,11 +140,52 @@ def run_pipeline(args):
             else:
                 print(f"    ✅ PASS")
         print(f"  検査完了: {'全件PASS' if all_pass else '一部FAIL あり'}")
+
+        # ⑦ Discord通知（--notify-discord または DISCORD_NOTIFY=1 時）
+        notify = args.notify_discord or os.getenv("DISCORD_NOTIFY") == "1"
+        if notify:
+            print(f"\n[⑦] Discord通知...")
+            try:
+                from automation.notify.discord_notifier import send_for_approval
+                threads_path = Path(threads_dir)
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                for r in article_results:
+                    # 対応する Threads ファイルを特定（日付_index_keyword_threads.txt）
+                    safe_kw = r["keyword"].replace(" ", "_").replace("/", "_")
+                    pattern = f"{today_str}_{r['index']:03d}_{safe_kw}_threads.txt"
+                    tfile = threads_path / pattern
+                    if not tfile.exists():
+                        # フォールバック: index のみで検索
+                        matches = list(threads_path.glob(
+                            f"{today_str}_{r['index']:03d}_*_threads.txt"
+                        ))
+                        tfile = matches[0] if matches else None
+
+                    if tfile and tfile.exists():
+                        content = tfile.read_text(encoding="utf-8").strip()
+                        print(f"  [{r['index']}] {r['keyword']}")
+                        send_for_approval(
+                            content=content,
+                            source_file=str(tfile),
+                            article_file=r.get("file", ""),  # Note投稿用の記事ファイルパス
+                            tags=r.get("tags", []),           # SEO ハッシュタグ
+                            index=r["index"],
+                            dry_run=args.dry_run,
+                        )
+                    else:
+                        print(f"  [{r['index']}] Threadsファイルが見つかりません: {pattern}")
+                print("  Discord通知完了")
+            except Exception as e:
+                warnings.warn(f"[Discord通知] エラーが発生しました: {e} (パイプラインは継続)")
+        else:
+            print("\n[⑦] Discord通知... スキップ (--notify-discord を付けると有効)")
+
     else:
         print("\n[3/6] アフィリエイト候補... スキップ")
         print("[4/6] 有料note企画... スキップ")
         print("[5/6] Threads投稿... スキップ")
         print("[6/6] 記事検査... スキップ")
+        print("[⑦] Discord通知... スキップ")
 
     # サマリー
     print("\n" + "=" * 60)
@@ -162,6 +206,11 @@ def main():
     parser.add_argument("--articles-only", action="store_true", help="記事生成のみ実行（既存トレンド使用）")
     parser.add_argument("--count", type=int, default=3, help="生成記事数（デフォルト: 3）")
     parser.add_argument("--dry-run", action="store_true", help="API呼び出しなし（テスト用）")
+    parser.add_argument(
+        "--notify-discord",
+        action="store_true",
+        help="Threads投稿案をDiscordに通知（環境変数 DISCORD_NOTIFY=1 でも有効）",
+    )
     args = parser.parse_args()
 
     if args.trends_only and args.articles_only:

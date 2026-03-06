@@ -23,7 +23,7 @@ class Config:
 
 def load_config() -> Config:
     """設定をすべて読み込んで Config を返す"""
-    load_dotenv(BASE_DIR / ".env")
+    load_dotenv(BASE_DIR / ".env", override=True)
 
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:

@@ -32,55 +32,90 @@ ServerStart ノート生成・管理用リポジトリ。
 
 ### 4つのAIシステム
 
-| # | システム | 説明 | 出力先 |
-|---|---------|------|--------|
-| ① | SEOトレンド収集AI | HackerNews/Reddit/Qiita/Zennからトレンド収集＋スコアリング | `out/trends/` |
-| ② | AI記事工場 | Claude APIでnote記事を自動生成（プレーンテキスト） | `out/articles/` |
-| ③ | アフィリエイト最適化AI | 記事テーマに最適な広告候補＋A8キーワード生成 | `out/affiliate/` |
-| ④ | note収益導線AI | 有料note企画（タイトル/目次/価格案）を生成 | `out/premium/` |
+| # | システム | 使用モデル | 説明 | 出力先 |
+|---|---------|----------|------|--------|
+| ① | SEOトレンド収集AI | FAST | HackerNews/Reddit/Qiita/Zennからトレンド収集＋スコアリング | `out/trends/` |
+| ② | AI記事工場 | ARTICLE | Claude APIでnote記事を自動生成（プレーンテキスト・1200文字以上） | `out/articles/` |
+| ③ | アフィリエイト最適化AI | FAST | 記事テーマに最適な広告候補＋A8キーワード生成 | `out/affiliate/` |
+| ④ | note収益導線AI | FAST | 有料note企画（タイトル/目次/価格案）を生成 | `out/premium/` |
 
-+ Threads投稿生成 → `out/threads/`
-+ 自動品質検査 → `out/reports/`
++ Threads投稿生成（FAST）→ `out/threads/`
++ 自動品質検査（ローカル）→ `out/reports/`
 
 ### セットアップ
 
 ```bash
-# 依存パッケージインストール
+# 1. 仮想環境を有効化（初回はvenv作成が必要）
+source .venv/bin/activate   # または: python3 -m venv .venv && source .venv/bin/activate
+
+# 2. 依存パッケージインストール
 pip install -r requirements.txt
 
-# APIキー設定
+# 3. APIキー設定
 cp .env.example .env
-# .env を編集して ANTHROPIC_API_KEY を設定
+nano .env   # ANTHROPIC_API_KEY を設定
 ```
+
+### .env 設定例
+
+```dotenv
+ANTHROPIC_API_KEY=sk-ant-xxxxx        # 必須: Anthropic APIキー
+
+CLAUDE_MODEL_ARTICLE=claude-sonnet-4-6          # 記事生成（高品質）
+CLAUDE_MODEL_FAST=claude-haiku-4-5-20251001     # 軽量処理（高速・低コスト）
+CLAUDE_MODEL=claude-sonnet-4-6                  # フォールバック
+```
+
+**モデル切替**: `.env` の値を変えるだけでOK。コードの変更は不要。
 
 ### 実行方法
 
 ```bash
-# 全パイプライン実行（SEO収集→記事生成→広告→有料note→Threads→検査）
-python run_auto.py
+# 動作確認（API呼び出しなし・全件PASSを確認）
+python run_auto.py --dry-run --count 3
 
-# トレンド収集のみ
-python run_auto.py --trends-only
+# 本番実行（全パイプライン: SEO収集→記事生成→広告→有料note→Threads→検査）
+python run_auto.py --count 1   # 1本
+python run_auto.py --count 3   # 3本（デフォルト）
 
-# 記事生成のみ（既存トレンド使用）
-python run_auto.py --articles-only
-
-# 生成記事数を指定（デフォルト3本）
-python run_auto.py --count 5
-
-# テスト実行（API呼び出しなし）
-python run_auto.py --dry-run
+# 部分実行
+python run_auto.py --trends-only      # トレンド収集のみ
+python run_auto.py --articles-only    # 記事生成のみ（既存トレンド使用）
 ```
 
-### 運用方法
+### 記事品質検査（6項目）
 
-毎日の運用フロー:
-1. `python run_auto.py` で1〜3本の記事を自動生成
-2. `out/articles/` の記事を確認・微修正
-3. noteに投稿
-4. `out/threads/` のテキストをThreadsに投稿
-5. `out/affiliate/` の広告候補を参考にA8リンクを挿入
-6. `out/premium/` の企画を参考に有料noteを作成
+| 検査項目 | 基準 |
+|---------|------|
+| PR表記 | 冒頭に「※本記事には広告が含まれます」 |
+| 広告枠 | `{{A8_LINK_TOP/MID/BOTTOM}}` 各1箇所 |
+| 文字数 | 1200文字以上 |
+| NG表現 | 誇大広告ワードなし |
+| プレーンテキスト | Markdown/HTMLなし |
+| テンプレート準拠 | 必須セクション全て存在 |
+
+### 毎日の運用フロー
+
+```
+python run_auto.py --count 3
+   ↓
+out/articles/ の記事を確認・A8リンクを挿入
+   ↓
+note に投稿
+   ↓
+out/threads/ のテキストを Threads に投稿
+   ↓
+out/premium/ の企画を参考に有料note作成
+```
+
+### トラブルシューティング
+
+| エラー | 対処 |
+|-------|------|
+| `model: xxxx not found` | `.env` の `CLAUDE_MODEL_*` を確認 |
+| `ANTHROPIC_API_KEY が設定されていません` | `.env` にAPIキーを設定 |
+| 記事が短い（1200文字未満）| APIを再実行 or プロンプトを調整 |
+| 検査FAIL | `out/reports/` のJSONで原因確認 |
 
 ---
 

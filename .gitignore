@@ -12,4 +12,31 @@ final_package/out/
 out/
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+
+# バックアップ・廃止ファイル
+*.bak
+*.bak.*
+*.broken
+*.broken.*
+
+# ブラウザ関連
+google-chrome-*.deb
+chromedriver
+geckodriver
+
+# デバッグ画像
+out/debug_*.png
+out/test_*.png
+
+# OS
+Thumbs.db
+
+*.deb
+
+*.deb
+
+*.deb
+*.bak
+*.broken

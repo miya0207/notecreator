@@ -2,6 +2,13 @@
 
 import re
 
+# 必須広告スロット: (プレースホルダー, セクション見出し)
+_AD_SLOTS = [
+    ("{{A8_LINK_TOP}}", "【おすすめツール】"),
+    ("{{A8_LINK_MID}}", "【おすすめサービス】"),
+    ("{{A8_LINK_BOTTOM}}", "【おすすめ】"),
+]
+
 
 def strip_markdown(text: str) -> str:
     """Markdown記号を除去してプレーンテキストに変換"""
@@ -47,6 +54,62 @@ def strip_markdown(text: str) -> str:
     return "\n".join(cleaned)
 
 
+def normalize_ad_slots(text: str) -> str:
+    """広告スロットの表記を統一する。
+
+    Claudeが {A8_LINK_TOP} (シングルブレース) で出力した場合でも
+    {{A8_LINK_TOP}} (ダブルブレース) に正規化する。
+    既に正しい形式の場合は変更しない。
+    """
+    for slot_name in ["A8_LINK_TOP", "A8_LINK_MID", "A8_LINK_BOTTOM"]:
+        correct = "{{" + slot_name + "}}"
+        single = "{" + slot_name + "}"
+        # 既に正しい形式があればスキップ（二重変換防止）
+        if correct in text:
+            continue
+        # シングルブレースを正しい形式に変換
+        text = text.replace(single, correct)
+    return text
+
+
+def ensure_article_structure(text: str, keyword: str = "") -> str:
+    """記事の必須要素が欠けていたら補完する（冪等: 複数回呼んでも安全）。
+
+    補完する要素:
+    1. 冒頭のPR表記「※本記事には広告が含まれます」
+    2. 「この記事でわかること」セクション
+    3. 広告スロット 3箇所 ({{A8_LINK_TOP/MID/BOTTOM}}) と見出し
+    """
+    result = text
+
+    # 1. PR表記（冒頭200文字内になければ先頭に追加）
+    if "※本記事には広告が含まれます" not in result[:300]:
+        result = "※本記事には広告が含まれます\n\n" + result
+
+    # 2. 「この記事でわかること」セクション
+    if "この記事でわかること" not in result:
+        kw = keyword or "このテーマ"
+        section = (
+            "■ この記事でわかること\n\n"
+            f"・{kw}の基本概念がわかる\n"
+            "・具体的な活用方法がわかる\n"
+            "・次のステップが明確になる\n"
+        )
+        # 最初の段落（空行区切り）の後に挿入
+        idx = result.find("\n\n")
+        if idx >= 0:
+            result = result[:idx + 2] + section + "\n" + result[idx + 2:]
+        else:
+            result = result.rstrip("\n") + "\n\n" + section
+
+    # 3. 広告スロット（なければ対応セクション見出しごと末尾に追加）
+    for slot, header in _AD_SLOTS:
+        if slot not in result:
+            result = result.rstrip("\n") + f"\n\n{header}\n{slot}\n"
+
+    return result
+
+
 def format_article(
     title: str,
     introduction: str,
@@ -58,49 +121,48 @@ def format_article(
     """記事テンプレートに沿ってプレーンテキスト記事を組み立てる"""
     points_text = "\n".join(f"・{p}" for p in key_points)
 
-    article = f"""※本記事には広告が含まれます
-
-{title}
-
-{introduction}
-
-■ この記事でわかること
-
-{points_text}
-
-{body_section1}
-
-【おすすめツール】
-{{{{A8_LINK_TOP}}}}
-
-{body_section2}
-
-【おすすめサービス】
-{{{{A8_LINK_MID}}}}
-
-{summary}
-
-【おすすめ】
-{{{{A8_LINK_BOTTOM}}}}
-"""
+    # 注意: f-string 内の {{...}} は { に変換されるため、
+    # {{A8_LINK_TOP}} → {A8_LINK_TOP} になってしまう。
+    # そのため normalize_ad_slots で補正するか、後続の ensure で補完する。
+    article = (
+        "※本記事には広告が含まれます\n\n"
+        f"{title}\n\n"
+        f"{introduction}\n\n"
+        "■ この記事でわかること\n\n"
+        f"{points_text}\n\n"
+        f"{body_section1}\n\n"
+        "【おすすめツール】\n"
+        "{{A8_LINK_TOP}}\n\n"
+        f"{body_section2}\n\n"
+        "【おすすめサービス】\n"
+        "{{A8_LINK_MID}}\n\n"
+        f"{summary}\n\n"
+        "【おすすめ】\n"
+        "{{A8_LINK_BOTTOM}}\n"
+    )
     return article
 
 
 def format_raw_article(raw_text: str) -> str:
-    """Claudeの生出力からMarkdownを除去してプレーンテキスト化"""
+    """Claudeの生出力からMarkdownを除去し、広告スロット表記を正規化する"""
     text = strip_markdown(raw_text)
+    text = normalize_ad_slots(text)
     # 連続空行を最大2行に制限
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
 
 if __name__ == "__main__":
-    sample = format_article(
-        title="AI副業の始め方ガイド",
-        introduction="最近、AIを使った副業が注目されています。この記事では初心者向けに解説します。",
-        key_points=["AI副業の種類がわかる", "必要なツールがわかる", "始め方の手順がわかる"],
-        body_section1="AIツールには文章生成、画像生成、データ分析など様々な種類があります。\n\n初心者におすすめなのは、ChatGPTを使ったライティング支援です。",
-        body_section2="副業を始めるには、まずクラウドソーシングサイトに登録しましょう。\n\nランサーズやクラウドワークスが有名です。",
-        summary="AI副業は初心者でも始めやすい分野です。まずは小さく始めて、実績を積んでいきましょう。",
-    )
-    print(sample)
+    # normalize_ad_slots テスト
+    sample_single = "本文\n{A8_LINK_TOP}\n本文\n{A8_LINK_MID}\n本文\n{A8_LINK_BOTTOM}"
+    normalized = normalize_ad_slots(sample_single)
+    print("normalize_ad_slots テスト:")
+    print(normalized)
+    print()
+
+    # ensure_article_structure テスト（何もない短文に補完）
+    short = "AI副業の始め方について解説します。AIを使えば効率的に副業が可能です。"
+    ensured = ensure_article_structure(short, keyword="AI副業")
+    print("ensure_article_structure テスト:")
+    print(ensured)
+    print(f"文字数: {len(ensured)}")

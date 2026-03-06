@@ -4,7 +4,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from automation.articles.formatter import format_raw_article
+from automation.articles.formatter import ensure_article_structure, format_raw_article
 from automation.common.claude_client import ClaudeClient
 
 SYSTEM_PROMPT = """\
@@ -25,7 +25,7 @@ ARTICLE_TEMPLATE = """\
 キーワード: {keyword}
 ジャンル: {genre}
 
-以下のフォーマットに厳密に従ってください:
+以下のフォーマットに厳密に従ってください。各セクションを省略せず必ず出力してください:
 
 ※本記事には広告が含まれます
 
@@ -37,21 +37,56 @@ ARTICLE_TEMPLATE = """\
 
 [箇条書きで3〜5項目。各項目は「・」で始めてください]
 
-[本文セクション1: テーマの基礎知識や概要を解説。初心者にわかりやすく]
+[本文セクション1: テーマの基礎知識や概要を解説。初心者にわかりやすく。500文字以上]
 
 【おすすめツール】
 {{{{A8_LINK_TOP}}}}
 
-[本文セクション2: 具体的な方法やステップを解説]
+[本文セクション2: 具体的な方法やステップを解説。400文字以上]
 
 【おすすめサービス】
 {{{{A8_LINK_MID}}}}
 
-[まとめ: 読者への応援メッセージと次のアクション]
+[まとめ: 読者への応援メッセージと次のアクション。200文字以上]
 
 【おすすめ】
 {{{{A8_LINK_BOTTOM}}}}
 """
+
+MIN_CHAR_COUNT = 1200
+
+HASHTAG_PROMPT = """\
+以下のnote記事に最適なハッシュタグを3〜5個提案してください。
+- #は付けない（例: AI副業）
+- カンマ区切りで1行にまとめる
+- SEO効果が高く、note.comで実際に使われるタグを選ぶ
+
+キーワード: {keyword}
+ジャンル: {genre}
+"""
+
+
+def generate_hashtags(client: "ClaudeClient", keyword: str, genre: str) -> list[str]:
+    """キーワード・ジャンルから SEO 用ハッシュタグリストを生成して返す。
+
+    Args:
+        client: Claude API クライアント
+        keyword: SEO キーワード
+        genre: 記事ジャンル
+
+    Returns:
+        ハッシュタグリスト（# なし）。最大5個。
+    """
+    prompt = HASHTAG_PROMPT.format(keyword=keyword, genre=genre)
+    try:
+        raw = client.generate("", prompt, max_tokens=100)
+        # "AI副業, ChatGPT, 副業初心者" → ["AI副業", "ChatGPT", "副業初心者"]
+        tags = [t.strip().lstrip("#") for t in raw.split(",")]
+        tags = [t for t in tags if t and len(t) <= 20]
+        return tags[:5]
+    except Exception as e:
+        print(f"    ⚠️ ハッシュタグ生成スキップ: {e}")
+        return []
 
 
 def load_latest_trends(trends_dir: str) -> list[dict]:
@@ -72,10 +107,24 @@ def load_latest_trends(trends_dir: str) -> list[dict]:
 
 
 def generate_article(client: ClaudeClient, keyword: str, genre: str) -> str:
-    """1キーワードについて記事を生成"""
+    """1キーワードについて記事を生成し、必須構造を保証して返す"""
     user_prompt = ARTICLE_TEMPLATE.format(keyword=keyword, genre=genre)
     raw = client.generate(SYSTEM_PROMPT, user_prompt, max_tokens=4096)
-    return format_raw_article(raw)
+
+    # Markdown除去 + 広告スロット正規化
+    article = format_raw_article(raw)
+
+    # 必須要素が欠けていたら補完（冪等）
+    article = ensure_article_structure(article, keyword=keyword)
+
+    # 文字数チェック
+    char_count = len(article)
+    if char_count < MIN_CHAR_COUNT:
+        print(f"    ⚠️  警告: 生成記事が短い ({char_count}文字 / 最低{MIN_CHAR_COUNT}文字推奨)")
+    else:
+        print(f"    文字数: {char_count}文字 ✓")
+
+    return article
 
 
 def generate_articles(
@@ -113,12 +162,19 @@ def generate_articles(
         filepath.write_text(article, encoding="utf-8")
         print(f"    保存: {filepath}")
 
+        # SEO ハッシュタグ生成
+        print(f"    ハッシュタグ生成中...")
+        tags = generate_hashtags(client, keyword, genre)
+        if tags:
+            print(f"    タグ: {', '.join(tags)}")
+
         results.append({
             "index": i,
             "keyword": keyword,
             "genre": genre,
             "file": str(filepath),
             "char_count": len(article),
+            "tags": tags,
         })
 
     return results
